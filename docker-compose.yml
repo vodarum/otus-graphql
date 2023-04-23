@@ -1,0 +1,35 @@
+version: "3.8"
+
+services:
+  node:
+    image: "node:18"
+    user: "node"
+    working_dir: /home/node/app
+    volumes:
+      - ./:/home/node/app
+    expose:
+      - "3000"
+    ports:
+      - 3000:3000
+    command: "npm start"
+
+  mongo:
+    image: mongo
+    hostname: mongo
+    tty: true
+    stdin_open: true
+    restart: "unless-stopped"
+    ports:
+      - 27017:27017
+
+  mongo-express:
+    image: mongo-express
+    environment:
+      - ME_CONFIG_MONGODB_SERVER=mongo
+      - ME_CONFIG_MONGODB_PORT=27017
+      - ME_CONFIG_MONGODB_ENABLE_ADMIN=false
+      - ME_CONFIG_MONGODB_AUTH_DATABASE=admin
+    depends_on:
+      - mongo
+    ports:
+      - "8888:8081"
